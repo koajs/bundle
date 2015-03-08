@@ -5,7 +5,7 @@
 
   The child of [node-enchilada](https://github.com/defunctzombie/node-enchilada) and [static-cache](https://github.com/koajs/static-cache).
 
-## Example
+## Examples
 
 - Browserify (with a callback and options)
 
