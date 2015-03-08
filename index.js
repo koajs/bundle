@@ -160,7 +160,7 @@ function middleware(path, settings, fn) {
       if (srcmap) {
         file.src = convert.removeComments(file.src);
         srcmap.setProperty('file', file.path);
-        mapping = file.path.replace(/.js$/, '.map.json');
+        mapping = file.path.replace(extname(file.path), '.map.json');
       } else {
         debug('unable to build the sourcemap');
       }
