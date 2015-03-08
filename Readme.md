@@ -87,28 +87,26 @@ var File = {
 
 The available `settings` are:
 
-- debug: enables sourcemaps
-- minify: minify JS and CSS
-- cache: cache responses across requests and add etags
-- gzip: gzip the response if it's supported
+- `debug`: enables sourcemaps
+- `minify`: minify JS and CSS
+- `cache`: cache responses across requests and add etags
+- `gzip`: gzip the response if it's supported
 
-The default settings depend on the environment:
+The default settings depend on the environment (`NODE_ENV`):
 
-```js
-var defaults = 'production' == process.env.NODE_ENV
-  ? {
-      debug: false,
-      minify: true,
-      cache: true,
-      gzip: true
-    }
-  : {
-      debug: true,
-      minify: false,
-      cache: false,
-      gzip: false
-    }
-```
+- Production:
+
+  - `debug`: false
+  - `minify`: true
+  - `cache`: true
+  - `gzip`: true
+
+- Development:
+
+  - `debug`: true
+  - `minify`: false
+  - `cache`: false
+  - `gzip`: false
 
 The bundler returns a function that you can then pass a `path` into:
 
@@ -124,16 +122,14 @@ The `path` can be a glob and is relative to `settings.root` or `process.cwd()`.
 - Need someone to review the sourcemap implementation,
   don't have much experience with them. If you throw
   in the entry file, it looks all garbled.
-
 - More examples
-
 - Testing
 
 ## Credits
 
 - [node-enchilada](https://github.com/defunctzombie/node-enchilada) and [browserify-middleware](https://github.com/forbeslindesay/browserify-middleware) for some ideas and general design.
 - [static-cache](https://github.com/koajs/static-cache) for the caching, etagging and gzipping.
-- sponsored by [Lapwing Labs](https://lapwinglabs.com).
+- sponsored by [Lapwing Labs](http://lapwinglabs.com).
 
 ## License
 
