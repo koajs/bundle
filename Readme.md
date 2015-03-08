@@ -26,7 +26,7 @@ app.use(Bundle('app.css', function *(file) {
     .entry(file.path)
     .use(require('duo-sass')())
     .run();
-});
+}));
 ```
 
 - Gulp (using currying and globbing)
