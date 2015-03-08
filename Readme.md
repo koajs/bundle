@@ -64,9 +64,9 @@ npm install koa-bundle
 
 ## API
 
-### bundle(glob, settings, handler) => middleware
-### bundle(settings, handler)(glob) => middleware
-### bundle(handler)(glob) => middleware
+#### `bundle(glob, settings, handler) => middleware`
+#### `bundle(settings, handler)(glob) => middleware`
+#### `bundle(handler)(glob) => middleware`
 
 Create a bundler with an optional set of `settings` and a `handler`.
 
@@ -84,6 +84,8 @@ var File = {
   gzip: true,
 }
 ```
+
+---
 
 The available `settings` are:
 
@@ -107,6 +109,8 @@ The default settings depend on the environment (`NODE_ENV`):
   - `minify`: false
   - `cache`: false
   - `gzip`: false
+
+---
 
 The bundler returns a function that you can then pass a `path` into:
 
