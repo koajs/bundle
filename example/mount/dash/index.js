@@ -16,7 +16,7 @@ var kr = require('kr');
  * Bundle
  */
 
-var bundle = Bundle({ root: __dirname }, function(file, fn) {
+var bundle = Bundle(function(file, fn) {
   var b = Browserify({ debug: file.debug })
     .on('error', fn)
     .add(file.path)
@@ -24,7 +24,9 @@ var bundle = Bundle({ root: __dirname }, function(file, fn) {
     .bundle(fn);
 });
 
-app.use(bundle('dash.js'));
+app.use(bundle('dash.js', {
+  root: __dirname
+}));
 
 /**
  * Mount

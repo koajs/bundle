@@ -63,7 +63,7 @@ function bundle(path, settings, fn) {
 
   return path
     ? middleware(path, settings, fn)
-    : function(path) { return middleware(path, settings, fn); }
+    : function(path, o) { return middleware(path, assign(settings, o || {}), fn); }
 }
 
 /**
