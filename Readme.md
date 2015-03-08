@@ -119,7 +119,7 @@ var bundle = Bundler(settings, handler);
 app.use(bundle('app.{js,css}'));
 ```
 
-The `path` can be a glob and is relative to `settings.root` or `process.cwd()`.
+The `path` can be a glob and is relative to `settings.root` or `process.cwd()`. The `script[src]` and `link[href]` is relative the `root` specified.
 
 ## TODO
 
