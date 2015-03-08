@@ -85,11 +85,18 @@ function middleware(path, settings, fn) {
 
   // create files for each entry
   files.forEach(function(entry) {
-    entry = fullpath(root, entry);
-    entries[entry] = {
-      type: extname(entry).slice(1),
+    var path = fullpath(root, entry);
+    var type = extname(path).slice(1);
+
+    // set up the routing
+    var route = nm(entry)
+      ? join(root, entry) + '.' + type
+      : path
+
+    entries[route] = {
+      type: type,
       plugin: fn || passthrough,
-      path: entry,
+      path: path,
       mtime: null,
       md5: null,
       size: 0
@@ -159,7 +166,7 @@ function middleware(path, settings, fn) {
       if (srcmap) {
         file.src = convert.removeComments(file.src);
         srcmap.setProperty('file', file.path);
-        mapping = file.path.replace(extname(file.path), '.map.json');
+        mapping = path.replace(extname(path), '.map.json');
       } else {
         debug('unable to build the sourcemap');
       }
@@ -272,6 +279,21 @@ function compress(file, srcmap) {
 }
 
 /**
+ * Safely resolve a node_module
+ *
+ * @param {String} mod
+ * @return {Boolean|String} mod
+ */
+
+function nm(mod) {
+  try {
+    return require.resolve(mod);
+  } catch(e) {
+    return false;
+  }
+}
+
+/**
  * Calculate the MD5
  *
  * @param {String} src
@@ -304,11 +326,7 @@ function fullpath(root, entry) {
   } else if (isRelative || isParent) {
     ret = resolve(root, entry);
   } else {
-    try {
-      ret = require.resolve(entry);
-    } catch (e) {
-      ret = join(root, entry);
-    }
+    ret = nm(entry) || join(root, entry);
   }
 
   if (!exists(ret)) {
