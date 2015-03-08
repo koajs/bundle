@@ -80,9 +80,8 @@ function middleware(path, settings, fn) {
   var entries = {};
   var maps = {};
 
-  if (!files.length) {
-    throw new Error('koa-bundle could not find "' + resolve(root, path) + '"');
-  }
+  // if no files, let `fullpath(root, entry)` try resolving
+  !files.length && files.push(path);
 
   // create files for each entry
   files.forEach(function(entry) {
