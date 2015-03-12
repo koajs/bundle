@@ -7,6 +7,7 @@ var debug = require('debug')('koa-bundle');
 var compressible = require('compressible');
 var normalize = require('path').normalize;
 var basename = require('path').basename;
+var relative = require('path').relative;
 var exists = require('fs').existsSync;
 var extname = require('path').extname;
 var resolve = require('path').resolve;
@@ -17,6 +18,7 @@ var Glob = require('glob').sync;
 var join = require('path').join;
 var wrapfn = require('wrap-fn');
 var crypto = require('crypto');
+var sep = require('path').sep;
 var zlib = require('zlib');
 var csso = require('csso');
 var cwd = process.cwd();
@@ -62,8 +64,8 @@ function bundle(path, settings, fn) {
   settings = assign(defaults, settings);
 
   return path
-    ? middleware(path, settings, fn)
-    : function(path, o) { return middleware(path, assign(settings, o || {}), fn); }
+    ? middleware.call(this, path, settings, fn)
+    : function(path, o) { return middleware.call(this, path, assign(settings, o || {}), fn); }
 }
 
 /**
@@ -78,6 +80,7 @@ function middleware(path, settings, fn) {
   var root = settings.root = settings.root || cwd;
   var files = Glob(path, { cwd: root });
   var entries = {};
+  var ctx = this;
   var maps = {};
 
   // if no files, let `fullpath(root, entry)` try resolving
@@ -87,13 +90,15 @@ function middleware(path, settings, fn) {
   files.forEach(function(entry) {
     var path = fullpath(root, entry);
     var type = extname(path).slice(1);
+    var node_module = nm(entry);
 
     // set up the routing
-    var route = nm(entry)
-      ? join(root, entry) + '.' + type
-      : path
+    var route = node_module
+      ? entry.split(sep)[0] + extname(node_module)
+      : relative(root, path)
 
-    entries[route] = {
+    debug('GET /%s => %s', route, path);
+    entries[join(root, route)] = {
       type: type,
       plugin: fn || passthrough,
       path: path,
@@ -147,7 +152,7 @@ function middleware(path, settings, fn) {
 
     debug('building the asset');
     var src = yield function(done) {
-      wrapfn(file.plugin, done)(assign(file, settings));
+      wrapfn(file.plugin, done).call(ctx, assign(file, settings));
     }
     debug('built the asset');
 
