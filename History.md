@@ -1,4 +1,10 @@
 
+0.1.1 / 2015-03-11
+==================
+
+  * pass the context through and more transparent routing via DEBUG
+  * fix example
+
 0.1.0 / 2015-03-08
 ==================
 
