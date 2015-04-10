@@ -154,6 +154,7 @@ function middleware(path, settings, fn) {
     var src = yield function(done) {
       wrapfn(file.plugin, done).call(ctx, assign(file, settings));
     }
+
     debug('built the asset');
 
     if (src) file.src = src.toString();
@@ -165,14 +166,15 @@ function middleware(path, settings, fn) {
 
     if (settings.debug) {
       debug('building the source map');
-      srcmap = convert.fromComment(file.src);
-      srcmap = srcmap.sourcemap ? srcmap : false;
 
-      if (srcmap) {
+      try {
+        srcmap = convert.fromComment(file.src);
+        srcmap = srcmap.sourcemap ? srcmap : false;
         file.src = convert.removeComments(file.src);
         srcmap.setProperty('file', file.path);
         mapping = path.replace(extname(path), '.map.json');
-      } else {
+        debug('built the source map');
+      } catch (e) {
         debug('unable to build the sourcemap');
       }
     }
