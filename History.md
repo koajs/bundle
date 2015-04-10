@@ -1,4 +1,9 @@
 
+0.1.2 / 2015-04-10
+==================
+
+  * better support when sourcemap is not present, thanks to @dominicbarnes & @thlorenz!
+
 0.1.1 / 2015-03-11
 ==================
 
