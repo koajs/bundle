@@ -157,7 +157,7 @@ function middleware(path, settings, fn) {
 
     debug('built the asset');
 
-    if (src) file.src = src.toString();
+    if (src && file != src) file.src = src.toString();
     this.type = file.type;
 
     // generate sourcemaps in debug mode
