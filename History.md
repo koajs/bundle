@@ -1,4 +1,9 @@
 
+0.1.3 / 2015-04-10
+==================
+
+  * support passing the file object back through
+
 0.1.2 / 2015-04-10
 ==================
 
