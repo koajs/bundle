@@ -1,4 +1,10 @@
 
+1.0.0 / 2015-05-31
+==================
+
+* New API to be route agnostic across mounts
+* Bugfixes, testing and a complete example
+
 0.1.3 / 2015-04-10
 ==================
 
