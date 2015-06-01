@@ -16,7 +16,6 @@ var resolve = require('path').resolve;
 var assign = require('object-assign');
 var uglify = require('uglify-js');
 var mime = require('mime-types');
-var Glob = require('glob').sync;
 var join = require('path').join;
 var wrapfn = require('wrap-fn');
 var crypto = require('crypto');

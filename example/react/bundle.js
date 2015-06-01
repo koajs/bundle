@@ -42,7 +42,7 @@ module.exports = Bundle({ root: __dirname }, function(file, fn) {
   if ('js' == file.type) {
     Browserify(options)
       .on('error', fn)
-      .external('react')
+      .external(['react'])
       .add(file.path)
       .transform(babelify)
       .transform(envify)
