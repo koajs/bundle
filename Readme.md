@@ -10,29 +10,31 @@
 - Browserify (with a callback and options)
 
 ```js
-app.use(Bundle('app.js', { debug: true }, function(file, fn) {
+var bundle = Bundle({ debug: true }, function(file, fn) {
   Browserify({ debug: file.debug })
     .add(file.path)
     .transform(require('babelify'))
     .bundle(fn);
-}));
+}))
+app.use(bundle('app.js'));
 ```
 
 - Duo (using generators)
 
 ```js
-app.use(Bundle('app.css', function *(file) {
+var bundle = Bundle(function *(file) {
   return yield Duo(file.root)
     .entry(file.path)
     .use(require('duo-sass')())
     .run();
-}));
+})
+app.use(bundle('app.css'));
 ```
 
 - Gulp (using currying and globbing)
 
 ```js
-var bundle = Bundler(function(file, fn) {
+var bundle = Bundler({ root: __dirname }, function(file, fn) {
   var gulp = Gulp.src(file.path, { cwd: file.root });
 
   if ('styl' == file.type) {
@@ -52,8 +54,12 @@ var bundle = Bundler(function(file, fn) {
   gulp.on('end', fn);
 });
 
-// ... in another file
-app.use(bundle('app.{styl,css}', { root: __dirname }));
+// ... in another file, single middleware
+app.use(bundle());
+
+// multiple endpoints
+bundle('app.styl');
+bundle('app.js');
 ```
 
 ## Installation
@@ -64,9 +70,8 @@ npm install koa-bundle
 
 ## API
 
-#### `bundle(glob, settings, handler) => middleware`
-#### `bundle(settings, handler)(glob) => middleware`
-#### `bundle(handler)(glob) => middleware`
+#### `bundle(settings, handler) => bundler([path]) => middleware`
+#### `bundle(handler)(glob) => bundler([path]) => middleware`
 
 Create a bundler with an optional set of `settings` and a `handler`.
 
@@ -116,16 +121,14 @@ The bundler returns a function that you can then pass a `path` into:
 
 ```js
 var bundle = Bundler(settings, handler);
-app.use(bundle('app.{js,css}'));
+app.use(bundle('app.js'));
 ```
 
-The `path` can be a glob and is relative to `settings.root` or `process.cwd()`. The `script[src]` and `link[href]` is relative the `root` specified.
+The `path` is relative to `settings.root` or `process.cwd()`. The `script[src]` and `link[href]` is relative the `root` specified.
 
 ## TODO
 
-- Need someone to review the sourcemap implementation,
-  don't have much experience with them. If you throw
-  in the entry file, it looks all garbled.
+- Warmup cache in production
 - More examples
 - Testing
 
@@ -137,25 +140,6 @@ The `path` can be a glob and is relative to `settings.root` or `process.cwd()`. 
 
 ## License
 
-(The MIT License)
+MIT
 
 Copyright (c) 2015 Matthew Mueller &lt;matt@lapwinglabs.com&gt;
-
-Permission is hereby granted, free of charge, to any person obtaining
-a copy of this software and associated documentation files (the
-'Software'), to deal in the Software without restriction, including
-without limitation the rights to use, copy, modify, merge, publish,
-distribute, sublicense, and/or sell copies of the Software, and to
-permit persons to whom the Software is furnished to do so, subject to
-the following conditions:
-
-The above copyright notice and this permission notice shall be
-included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND,
-EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
-IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
-CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
-TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
-SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
