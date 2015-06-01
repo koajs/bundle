@@ -1,4 +1,10 @@
 
+1.0.1 / 2015-05-31
+==================
+
+  * Actually merge the branch
+  * new API, lots of bug fixes
+
 1.0.0 / 2015-05-31
 ==================
 
