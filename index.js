@@ -2,12 +2,14 @@
  * Module dependencies
  */
 
+var browser_resolve = require('browser-resolve').sync;
 var convert = require('convert-source-map');
 var debug = require('debug')('koa-bundle');
 var compressible = require('compressible');
 var normalize = require('path').normalize;
 var basename = require('path').basename;
 var relative = require('path').relative;
+var read = require('fs').readFileSync;
 var exists = require('fs').existsSync;
 var extname = require('path').extname;
 var resolve = require('path').resolve;
@@ -57,56 +59,70 @@ var defaults = 'production' == process.env.NODE_ENV
  * @param {Function|Generator} fn
  */
 
-function bundle(path, settings, fn) {
-  if ('function' == typeof path) fn = path, settings = {}, path = null;
-  else if ('object' == typeof path) fn = settings, settings = path, path = null;
-  else if ('function' == typeof settings) fn = settings, settings = {};
+function bundle(settings, fn) {
+  if (arguments.length == 1) settings = fn, settings = {};
   settings = assign(defaults, settings);
+  var root = settings.root || cwd;
+  var entries = {};
 
-  return path
-    ? middleware.call(this, path, settings, fn)
-    : function(path, o) { return middleware.call(this, path, assign(settings, o || {}), fn); }
+  return function _bundle(path) {
+    if (arguments.length) {
+      var obj = entry(root, path);
+      entries[obj.route] = obj;
+    }
+
+    return middleware.call(this, entries, settings, fn);
+  }
+}
+
+/**
+ * Add an entry
+ *
+ * @param {String} root
+ * @param {String} path
+ * @param {Object}
+ */
+
+function entry(root, mod) {
+  var node_module = nm(root, mod);
+  var route;
+  var path;
+
+  if (node_module) {
+    route = normalize(mod);
+    path = node_module;
+  } else {
+    path = fullpath(root, mod);
+    route = relative(root, path);
+  }
+
+  debug('GET /%s => %s', route, path);
+
+  var type = extname(path).slice(1);
+
+  return {
+    route: join(root, route),
+    mtime: null,
+    type: type,
+    path: path,
+    md5: null,
+    mod: mod,
+    size: 0
+  };
 }
 
 /**
  * Create the middleware
  *
- * @param {String} filepath
+ * @param {Array} entries
  * @param {Object} settings
  * @param {Function|Generator} fn
  */
 
-function middleware(path, settings, fn) {
+function middleware(entries, settings, fn) {
   var root = settings.root = settings.root || cwd;
-  var files = Glob(path, { cwd: root });
-  var entries = {};
   var ctx = this;
   var maps = {};
-
-  // if no files, let `fullpath(root, entry)` try resolving
-  !files.length && files.push(path);
-
-  // create files for each entry
-  files.forEach(function(entry) {
-    var path = fullpath(root, entry);
-    var type = extname(path).slice(1);
-    var node_module = nm(entry);
-
-    // set up the routing
-    var route = node_module
-      ? entry.split(sep)[0] + extname(node_module)
-      : relative(root, path)
-
-    debug('GET /%s => %s', route, path);
-    entries[join(root, route)] = {
-      type: type,
-      plugin: fn || passthrough,
-      path: path,
-      mtime: null,
-      md5: null,
-      size: 0
-    };
-  });
 
   return function *bundle(next) {
     // only accept HEAD and GET
@@ -143,18 +159,26 @@ function middleware(path, settings, fn) {
         debug('serving cached gzipped asset');
         this.remove('Content-Length');
         this.set('Content-Encoding', 'gzip');
+        this.type = file.type;
         return this.body = file.zip;
       } else if (file.src) {
         debug('serving cached asset');
+        this.type = file.type;
         return this.body = file.src
       }
     }
 
     debug('building the asset');
-    var src = yield function(done) {
-      wrapfn(file.plugin, done).call(ctx, assign(file, settings));
+    try {
+      var src = yield function(done) {
+        wrapfn(fn, done).call(ctx, assign(file, settings));
+      }
+    } catch(e) {
+      console.error(e.stack);
+      this.body = e.stack;
+      this.status = 500;
+      return;
     }
-
     debug('built the asset');
 
     if (src && file != src) file.src = src.toString();
@@ -175,7 +199,7 @@ function middleware(path, settings, fn) {
         mapping = path.replace(extname(path), '.map.json');
         debug('built the source map');
       } catch (e) {
-        debug('unable to build the sourcemap');
+        debug('unable to build the sourcemap: %s', e.toString());
       }
     }
 
@@ -214,10 +238,12 @@ function middleware(path, settings, fn) {
       debug('serving the gzipped asset');
       this.remove('Content-Length');
       this.set('Content-Encoding', 'gzip');
+      this.type = file.type;
       file.zip = yield gzip(file.src);
       this.body = file.zip;
     } else {
       debug('serving the asset');
+      this.type = file.type;
       this.body = file.src;
     }
   }
@@ -292,10 +318,10 @@ function compress(file, srcmap) {
  * @return {Boolean|String} mod
  */
 
-function nm(mod) {
+function nm(root, entry) {
   try {
-    return require.resolve(mod);
-  } catch(e) {
+    return browser_resolve(entry, { basedir: root });
+  } catch (e) {
     return false;
   }
 }
@@ -333,11 +359,11 @@ function fullpath(root, entry) {
   } else if (isRelative || isParent) {
     ret = resolve(root, entry);
   } else {
-    ret = nm(entry) || join(root, entry);
+    ret = nm(root, entry) || join(root, entry);
   }
 
   if (!exists(ret)) {
-    throw new Error(entry + 'does not exist! resolved to: ' + ret);
+    throw new Error(entry + ' does not exist! resolved to: ' + ret);
   }
 
   return ret;
