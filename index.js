@@ -88,7 +88,7 @@ function entry(root, mod) {
   var path;
 
   if (node_module) {
-    route = normalize(mod);
+    route = relative(root, normalize(mod));
     path = node_module;
   } else {
     path = fullpath(root, mod);
