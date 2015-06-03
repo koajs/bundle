@@ -173,8 +173,9 @@ function middleware(entries, settings, fn) {
         wrapfn(fn, done).call(ctx, assign(file, settings));
       }
     } catch(e) {
-      console.error(e.stack);
-      this.body = e.stack;
+      var msg = e.stack ? e.stack : e.toString();
+      console.error(msg);
+      this.body = msg;
       this.status = 500;
       return;
     }
