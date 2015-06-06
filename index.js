@@ -59,7 +59,7 @@ var defaults = 'production' == process.env.NODE_ENV
  */
 
 function bundle(settings, fn) {
-  if (arguments.length == 1) settings = fn, settings = {};
+  if (arguments.length == 1) fn = settings, settings = {};
   settings = assign(defaults, settings);
   var root = settings.root || cwd;
   var entries = {};
