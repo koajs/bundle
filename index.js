@@ -64,10 +64,20 @@ function bundle(settings, fn) {
   var root = settings.root || cwd;
   var entries = {};
 
-  return function _bundle(path) {
-    if (arguments.length) {
+  return function _bundle(settings2, path) {
+    if (arguments.length == 2) {
+      settings = assign(settings, settings2);
+      root = settings.root;
       var obj = entry(root, path);
       entries[obj.route] = obj;
+    } else if (arguments.length == 1) {
+      if ('string' == typeof settings2) {
+        root = settings.root;
+        var obj = entry(root, settings2);
+        entries[obj.route] = obj;
+      } else {
+        settings = assign(settings, settings2);
+      }
     }
 
     return middleware.call(this, entries, settings, fn);
@@ -88,11 +98,11 @@ function entry(root, mod) {
   var path;
 
   if (node_module) {
-    route = relative(root, normalize(mod));
+    route = relative(root, resolve(root, normalize(mod)));
     path = node_module;
   } else {
     path = fullpath(root, mod);
-    route = relative(root, path);
+    route = relative(root, resolve(root, normalize(mod)));
   }
 
   debug('GET /%s => %s', route, path);
