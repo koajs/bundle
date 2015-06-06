@@ -1,4 +1,12 @@
 
+n.n.n / 2015-06-05
+==================
+
+  * fix when there is no src
+  * Release 1.0.4
+  * fix up routing path and allow you to pass options to middleware
+  * still display error when no stack is present
+
 1.0.4 / 2015-06-05
 ==================
 

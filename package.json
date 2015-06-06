@@ -1,6 +1,6 @@
 {
   "name": "koa-bundle",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Generic asset pipeline with caching, etags, and sourcemaps",
   "keywords": [],
   "author": "Matthew Mueller <matt@lapwinglabs.com>",
