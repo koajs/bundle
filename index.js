@@ -241,7 +241,7 @@ function middleware(entries, settings, fn) {
     }
 
     // finally calculate the file size
-    file.size = file.src.length;
+    file.size = file.src ? file.src.length : 0;
 
     // gzip the asset or serve it directly
     if (settings.gzip && shouldGzip(file, encodings)) {
