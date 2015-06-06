@@ -1,4 +1,9 @@
 
+1.0.4 / 2015-06-05
+==================
+
+  * fix up routing path and allow you to pass options to middleware
+
 1.0.3 / 2015-05-31
 ==================
 
