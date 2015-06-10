@@ -9,6 +9,7 @@
     "url": "git://github.com/lapwinglabs/koa-bundle.git"
   },
   "dependencies": {
+    "ansi-html": "0.0.4",
     "browser-resolve": "^1.9.0",
     "compressible": "^2.0.2",
     "convert-source-map": "^1.1.1",

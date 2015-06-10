@@ -15,6 +15,7 @@ var extname = require('path').extname;
 var resolve = require('path').resolve;
 var assign = require('object-assign');
 var uglify = require('uglify-js');
+var toHTML = require('ansi-html');
 var mime = require('mime-types');
 var join = require('path').join;
 var wrapfn = require('wrap-fn');
@@ -32,10 +33,16 @@ var fs = require('fs');
 module.exports = bundle;
 
 /**
+ * Is production?
+ */
+
+var production = 'production' == process.env.NODE_ENV;
+
+/**
  * Default settings
  */
 
-var defaults = 'production' == process.env.NODE_ENV
+var defaults = production
   ? {
       debug: false,
       minify: true,
@@ -185,8 +192,13 @@ function middleware(entries, settings, fn) {
     } catch(e) {
       var msg = e.stack ? e.stack : e.toString();
       console.error(msg);
-      this.body = msg;
       this.status = 500;
+
+      if (!production) {
+        this.body = writeError(msg);
+        this.status = 200;
+      }
+
       return;
     }
     debug('built the asset');
@@ -403,4 +415,25 @@ function decode(path) {
 
 function passthrough(file) {
   return file;
+}
+
+/**
+ * Document.write
+ *
+ * @param {String} msg
+ * @return {String}
+ */
+
+function writeError(msg) {
+  return [
+    'document.addEventListener("DOMContentLoaded", function() {',
+    'document.write("',
+    [
+      '<pre style="padding: 50px;">',
+      toHTML(msg).replace(/(\r\n|\n|\r)/gm, '<br/>').replace(/color\:\#fff\;/g, '').replace(new RegExp(cwd, 'g'), '.'),
+      '</pre>'
+    ].join('').replace(/['"]/gm, '\\$&'),
+    '");',
+    '});'
+  ].join('');
 }
