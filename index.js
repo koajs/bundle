@@ -9,6 +9,7 @@ var compressible = require('compressible');
 var normalize = require('path').normalize;
 var basename = require('path').basename;
 var relative = require('path').relative;
+var escapeHTML = require('escape-html');
 var read = require('fs').readFileSync;
 var exists = require('fs').existsSync;
 var extname = require('path').extname;
@@ -430,7 +431,7 @@ function writeError(msg) {
     'document.write("',
     [
       '<pre style="padding: 50px;">',
-      toHTML(msg).replace(/(\r\n|\n|\r)/gm, '<br/>').replace(/color\:\#fff\;/g, '').replace(new RegExp(cwd, 'g'), '.'),
+      toHTML(escapeHTML(msg)).replace(/(\r\n|\n|\r)/gm, '<br/>').replace(/color\:\#fff\;/g, '').replace(new RegExp(cwd, 'g'), '.'),
       '</pre>'
     ].join('').replace(/['"]/gm, '\\$&'),
     '");',
