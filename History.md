@@ -1,5 +1,10 @@
 
-n.n.n / 2015-06-12
+1.0.9 / 2015-07-19
+==================
+
+  * pass CSS errors to the frontend
+
+1.0.8 / 2015-06-12
 ==================
 
   * escape HTML in error message
