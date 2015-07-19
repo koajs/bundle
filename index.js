@@ -196,7 +196,8 @@ function middleware(entries, settings, fn) {
       this.status = 500;
 
       if (!production) {
-        this.body = writeError(msg);
+        this.body = 'css' == file.type ? write_css_error(msg) : write_js_error(msg);
+        this.type = file.type;
         this.status = 200;
       }
 
@@ -425,7 +426,7 @@ function passthrough(file) {
  * @return {String}
  */
 
-function writeError(msg) {
+function write_js_error(msg) {
   return [
     'document.addEventListener("DOMContentLoaded", function() {',
     'document.write("',
@@ -437,4 +438,33 @@ function writeError(msg) {
     '");',
     '});'
   ].join('');
+}
+
+/**
+ * Document.write
+ *
+ * @param {String} msg
+ * @return {String}
+ */
+
+function write_css_error(msg) {
+  msg = 'CSS Error: \n\n' + msg;
+  return [
+    'html:after {',
+    '  content: "' + msg.replace(/(\r\n|\n|\r)/gm, ' \\A ').replace(new RegExp(cwd, 'g'), '.') + '";',
+    '  padding: 50px;',
+    '  white-space: pre-wrap;',
+    '  position: fixed;',
+    '  color: white;',
+    '  font-size: 14pt;',
+    '  font-family: monospace;',
+    '  top: 0;',
+    '  left: 0;',
+    '  right: 0;',
+    '  bottom: 0;',
+    '  background: #FF4743;',
+    '  border: 2px solid red;',
+    '  text-shadow: 1px 1px 0 red;',
+    '}'
+  ].join('\n');
 }
