@@ -1,5 +1,18 @@
 @import "./base.css";
 
+@font-face {
+  font-family: 'Roboto';
+  font-weight: 300;
+  font-style: normal;
+  src: local("☺"),
+       url('fonts/Roboto-Regular.ttf') format('truetype');
+}
+
+body {
+  background-image: url('./images/img.JPG');
+}
+
 h2 {
   color: purple;
+  font-family: 'Roboto';
 }

@@ -15,11 +15,13 @@ var exists = require('fs').existsSync;
 var extname = require('path').extname;
 var resolve = require('path').resolve;
 var assign = require('object-assign');
+var filedeps = require('file-deps');
 var uglify = require('uglify-js');
 var toHTML = require('ansi-html');
 var mime = require('mime-types');
 var join = require('path').join;
 var wrapfn = require('wrap-fn');
+var isBuffer = Buffer.isBuffer;
 var crypto = require('crypto');
 var sep = require('path').sep;
 var zlib = require('zlib');
@@ -205,8 +207,35 @@ function middleware(entries, settings, fn) {
     }
     debug('built the asset');
 
-    if (src && file != src) file.src = src.toString();
+    if (src && file != src) file.src = src;
     this.type = file.type;
+
+    // other types of assets
+    // TODO: do more intelligent things with results (like etag images, fonts, etc)
+    if (this.type !== 'application/javascript' && this.type !== 'text/css') {
+
+      // caching the asset
+      if (settings.cache) {
+        file.md5 = md5(file.src);
+        debug('caching the asset md5(%s)', file.md5);
+        this.response.etag = file.md5;
+      }
+
+      return this.body = file.src;
+    }
+
+    // ensure UTF8 for JS and CSS
+    file.src = file.src.toString()
+
+    // adding in the other dependencies
+    if (file.type == 'css') {
+      var deps = filedeps(file.src, file.type);
+      deps.forEach(function(dep) {
+        var obj = entry(root, dep);
+        debug('added: dependency %s => %s', obj.route, obj.path)
+        entries[obj.route] = obj;
+      })
+    }
 
     // generate sourcemaps in debug mode
     var srcmap = null;

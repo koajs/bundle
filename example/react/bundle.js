@@ -62,6 +62,8 @@ module.exports = Bundle({ root: __dirname }, function(file, fn) {
 
       fn(null, css);
     });
+  } else {
+    fs.readFile(file.path, fn);
   }
 
 });

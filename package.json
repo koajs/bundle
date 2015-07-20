@@ -16,9 +16,10 @@
     "csso": "^1.3.11",
     "debug": "^2.1.2",
     "escape-html": "^1.0.2",
+    "file-deps": "0.0.8",
     "mime-types": "^2.0.9",
     "object-assign": "^2.0.0",
-    "uglify-js": "^2.4.16",
+    "uglify-js": "^2.4.23",
     "wrap-fn": "^0.1.4"
   },
   "devDependencies": {
