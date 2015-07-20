@@ -231,6 +231,8 @@ function middleware(entries, settings, fn) {
     if (file.type == 'css') {
       var deps = filedeps(file.src, file.type);
       deps.forEach(function(dep) {
+        if (http(dep)) return;
+        dep = stripPath(dep);
         var obj = entry(root, dep);
         debug('added: dependency %s => %s', obj.route, obj.path)
         entries[obj.route] = obj;
@@ -496,4 +498,32 @@ function write_css_error(msg) {
     '  text-shadow: 1px 1px 0 red;',
     '}'
   ].join('\n');
+}
+
+/**
+ * Check if `url` is an HTTP URL.
+ *
+ * @param {String} path
+ * @param {Boolean}
+ * @api private
+ */
+
+function http(url) {
+  return url.slice(0, 4) === 'http'
+    || url.slice(0, 3) === '://'
+    || false;
+}
+
+/**
+ * Strip a querystring or hash fragment from a `path`.
+ *
+ * @param {String} path
+ * @return {String}
+ * @api private
+ */
+
+function stripPath(path) {
+  return path
+    .split('?')[0]
+    .split('#')[0];
 }
