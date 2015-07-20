@@ -1,4 +1,9 @@
 
+1.0.10 / 2015-07-20
+==================
+
+  * add seamless support for dependencies within stylesheets
+
 1.0.9 / 2015-07-19
 ==================
 
