@@ -99,10 +99,11 @@ function bundle(settings, fn) {
  *
  * @param {String} root
  * @param {String} path
+ * @param {Object} options
  * @param {Object}
  */
 
-function entry(root, mod) {
+function entry(root, mod, options) {
   var node_module = nm(root, mod);
   var route;
   var path;
@@ -111,7 +112,8 @@ function entry(root, mod) {
     route = relative(root, resolve(root, normalize(mod)));
     path = node_module;
   } else {
-    path = fullpath(root, mod);
+    path = fullpath(root, mod, options);
+    if (path instanceof Error) return path;
     route = relative(root, resolve(root, normalize(mod)));
   }
 
@@ -150,7 +152,7 @@ function middleware(entries, settings, fn) {
     // decode for `/%E4%B8%AD%E6%96%87`
     // normalize for `//index`
     var path = join(root, decode(normalize(this.path)));
-
+    console.log('path %s / %s', root, decode(normalize(this.path)));
     if (settings.debug && maps[path]) {
       debug('fetching sourcemap: %s', path);
       this.body = maps[path];
@@ -161,7 +163,6 @@ function middleware(entries, settings, fn) {
 
     var file = entries[path];
     var encodings = this.acceptsEncodings();
-
     if (settings.cache && file.md5) {
       debug('asset cached')
       // HACK: set status to 2xx make sure that fresh gets called
@@ -233,7 +234,10 @@ function middleware(entries, settings, fn) {
       deps.forEach(function(dep) {
         if (http(dep)) return;
         dep = stripPath(dep);
-        var obj = entry(root, dep);
+        var obj = entry(root, dep, { catch: true });
+        if (obj instanceof Error) {
+          return debug('warning: %s', obj.message);
+        }
         debug('added: dependency %s => %s', obj.route, obj.path)
         entries[obj.route] = obj;
       })
@@ -400,10 +404,14 @@ function md5(src) {
  *
  * @param {String} root
  * @param {String} entry
+ * @param {Object} options
  * @return {String}
  */
 
-function fullpath(root, entry) {
+function fullpath(root, entry, options) {
+  options = options || {};
+  options.catch = options.catch || false;
+
   var isRelative = './' == entry.slice(0, 2);
   var isParent = '..' == entry.slice(0, 2);
   var isAbsolute = '/' == entry[0];
@@ -418,7 +426,9 @@ function fullpath(root, entry) {
   }
 
   if (!exists(ret)) {
-    throw new Error(entry + ' does not exist! resolved to: ' + ret);
+    var err = new Error(entry + ' does not exist! resolved to: ' + ret);
+    if (options.catch) return err;
+    else throw err;
   }
 
   return ret;
