@@ -114,7 +114,7 @@ function entry(root, mod, options) {
   } else {
     path = fullpath(root, mod, options);
     if (path instanceof Error) return path;
-    route = relative(root, resolve(root, normalize(mod)));
+    route = '/' + relative(root, path);
   }
 
   debug('GET /%s => %s', route, path);
@@ -152,7 +152,6 @@ function middleware(entries, settings, fn) {
     // decode for `/%E4%B8%AD%E6%96%87`
     // normalize for `//index`
     var path = join(root, decode(normalize(this.path)));
-    console.log('path %s / %s', root, decode(normalize(this.path)));
     if (settings.debug && maps[path]) {
       debug('fetching sourcemap: %s', path);
       this.body = maps[path];
