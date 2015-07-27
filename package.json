@@ -6,7 +6,7 @@
   "author": "Matthew Mueller <matt@lapwinglabs.com>",
   "repository": {
     "type": "git",
-    "url": "git://github.com/lapwinglabs/koa-bundle.git"
+    "url": "git://github.com/koajs/bundle.git"
   },
   "dependencies": {
     "ansi-html": "0.0.4",
