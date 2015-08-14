@@ -152,10 +152,10 @@ function middleware(entries, settings, fn) {
     // decode for `/%E4%B8%AD%E6%96%87`
     // normalize for `//index`
     var path = join(root, decode(normalize(this.path)));
+
     if (settings.debug && maps[path]) {
       debug('fetching sourcemap: %s', path);
-      this.body = maps[path];
-      return yield* next;
+      return this.body = maps[path];
     } else if (!entries[path]) {
       return yield* next;
     }
