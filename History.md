@@ -1,4 +1,9 @@
 
+1.0.13 / 2015-08-14
+==================
+
+  * prevent middleware from continuing on source maps and messing things up
+
 1.0.12 / 2015-07-22
 ==================
 
