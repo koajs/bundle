@@ -1,4 +1,9 @@
 
+1.0.14 / 2015-09-30
+==================
+
+  * add the ability to pass file-specific parameters to the builder
+
 1.0.13 / 2015-08-14
 ==================
 
