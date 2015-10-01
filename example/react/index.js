@@ -6,12 +6,11 @@ var external = require('./external.js');
 var bundle = require('./bundle.js');
 var roo = require('roo')(__dirname);
 
-
 roo.use(external('react'));
 roo.use(bundle({ root: __dirname }));
 
-bundle('./client.js');
-bundle('./client.css');
+bundle(__dirname + '/client.js?external');
+bundle(__dirname + '/client.css');
 
 roo.get('/', 'client.html');
 

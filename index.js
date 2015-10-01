@@ -21,11 +21,13 @@ var toHTML = require('ansi-html');
 var mime = require('mime-types');
 var join = require('path').join;
 var wrapfn = require('wrap-fn');
+var qs = require('querystring');
 var isBuffer = Buffer.isBuffer;
 var crypto = require('crypto');
 var sep = require('path').sep;
 var zlib = require('zlib');
 var csso = require('csso');
+var url = require('url');
 var cwd = process.cwd();
 var fs = require('fs');
 
@@ -104,6 +106,9 @@ function bundle(settings, fn) {
  */
 
 function entry(root, mod, options) {
+  var obj = url.parse(mod)
+  mod = obj.pathname
+
   var node_module = nm(root, mod);
   var route;
   var path;
@@ -121,7 +126,7 @@ function entry(root, mod, options) {
 
   var type = extname(path).slice(1);
 
-  return {
+  return assign({
     route: join(root, route),
     mtime: null,
     type: type,
@@ -129,7 +134,7 @@ function entry(root, mod, options) {
     md5: null,
     mod: mod,
     size: 0
-  };
+  }, qs.parse(obj.query));
 }
 
 /**

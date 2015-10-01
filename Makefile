@@ -1,7 +1,8 @@
+example:
 
 test:
 	@./node_modules/.bin/mocha \
 		--require should \
 		--reporter spec
 
-.PHONY: test
+.PHONY: test example
