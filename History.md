@@ -1,4 +1,9 @@
 
+2.0.0 / 2015-10-01
+==================
+
+  * BREAKING: route now is request path, not fullpath.
+
 1.0.14 / 2015-09-30
 ==================
 
