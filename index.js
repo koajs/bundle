@@ -81,12 +81,12 @@ function bundle(settings, fn) {
       settings = assign(settings, settings2);
       root = settings.root;
       var obj = entry(root, path);
-      entries[obj.route] = obj;
+      entries[join(root, obj.route)] = obj;
     } else if (arguments.length == 1) {
       if ('string' == typeof settings2) {
         root = settings.root;
         var obj = entry(root, settings2);
-        entries[obj.route] = obj;
+        entries[join(root, obj.route)] = obj;
       } else {
         settings = assign(settings, settings2);
       }
@@ -127,7 +127,7 @@ function entry(root, mod, options) {
   var type = extname(path).slice(1);
 
   return assign({
-    route: join(root, route),
+    route: route,
     mtime: null,
     type: type,
     path: path,
@@ -242,8 +242,8 @@ function middleware(entries, settings, fn) {
         if (obj instanceof Error) {
           return debug('warning: %s', obj.message);
         }
-        debug('added: dependency %s => %s', obj.route, obj.path)
-        entries[obj.route] = obj;
+        debug('added: dependency /%s => %s', obj.route, obj.path)
+        entries[join(root, obj.route)] = obj;
       })
     }
 
