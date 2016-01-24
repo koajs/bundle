@@ -10,7 +10,7 @@
 - Browserify (with a callback and options)
 
 ```js
-var bundle = Bundle({ debug: true }, function(file, fn) {
+var bundle = Bundle({ debug: true, root: __dirname) }, function(file, fn) {
   Browserify({ debug: file.debug })
     .add(file.path)
     .transform(require('babelify'))
