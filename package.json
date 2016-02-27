@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "babelify": "^5.0.4",
-    "browserify": "^10.2.3",
+    "browserify": "^13.0.0",
     "envify": "^3.4.0",
     "myth": "^1.4.0",
     "react": "^0.12.2",
