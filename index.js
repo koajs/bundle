@@ -73,7 +73,7 @@ var defaults = production
 function bundle(settings, fn) {
   if (arguments.length == 1) fn = settings, settings = {};
   settings = assign(defaults, settings);
-  var root = settings.root || cwd;
+  var root = settings.root = settings.root || cwd;
   var entries = {};
 
   return function _bundle(settings2, path) {
