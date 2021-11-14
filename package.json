@@ -19,7 +19,7 @@
     "file-deps": "0.0.8",
     "mime-types": "^2.0.9",
     "object-assign": "^2.0.0",
-    "uglify-js": "^2.4.23",
+    "uglify-js": "^3.14.3",
     "wrap-fn": "^0.1.4"
   },
   "devDependencies": {
