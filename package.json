@@ -9,7 +9,7 @@
     "url": "git://github.com/koajs/bundle.git"
   },
   "dependencies": {
-    "ansi-html": "0.0.4",
+    "ansi-html": "0.0.9",
     "browser-resolve": "^1.9.0",
     "compressible": "^2.0.2",
     "convert-source-map": "^1.1.1",
